@@ -2,7 +2,7 @@ package entity;
 
 public class OperNum {
 
-    public String type;        //     类型	操作数:num 运算符:oper 空格or括号:blank
+    public String type;        //     类型	操作数:num 运算符:oper 空格:blank 括号:bracket
 
     /*type=操作数*/
     public int integer;        //     整数	根据分子分母得出
