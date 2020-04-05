@@ -15,12 +15,13 @@ public class OperNum {
     /*type=空格*/       //     左括号(   右括号 )   空格_
     public String pocket;
 
-    //一键化简函数
+    //一键初始化简函数
     public void simplify(){
         int a               =   this.numerator;
         int b               =   this.denominator;
         int r;
-
+        if(a<0)
+                a           =   -a;
         while(b>0) {    //辗转相除 最后a为公因数
             r = a%b;
             a = b;
@@ -29,9 +30,30 @@ public class OperNum {
         this.numerator      =   this.numerator/a;
         this.denominator    =   this.denominator/a;
 
-        if(this.numerator>this.denominator) {
-            this.integer    =   this.numerator/this.denominator;
-            this.numerator  =   this.numerator-this.denominator*this.integer;
+        if(this.numerator>this.denominator && this.denominator!=1) {
+            int temp;   //保留余数
+            this.integer    =   this.integer+this.numerator/this.denominator;
+            temp            =   this.numerator/this.denominator;
+            this.numerator  =   this.numerator-this.denominator*temp;
         }
+
+    }
+
+    //打印当前类型下的数据
+    public void print(){
+        //操作数类型
+        if(this.type=="num"){
+            if(this.integer > 0)
+                System.out.print(this.integer+"'"+this.numerator+"/"+this.denominator);
+            else if(this.denominator==1)
+                System.out.print(this.numerator);
+            else
+                System.out.print(this.numerator+"/"+this.denominator);
+        }
+        if(this.type=="oper")
+            System.out.print(this.operator);
+        if(this.type=="bracket")
+            System.out.print(this.pocket);
+        System.out.print(" ");
     }
 }
