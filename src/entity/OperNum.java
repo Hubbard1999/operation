@@ -22,6 +22,8 @@ public class OperNum {
         int r;
         if(a<0)
                 a           =   -a;
+        if(b<0)
+                b           =   -b;
         while(b>0) {    //辗转相除 最后a为公因数
             r = a%b;
             a = b;
@@ -39,6 +41,12 @@ public class OperNum {
 
     }
 
+    //带分数化假分数
+    public void yojan(){
+        this.numerator     =   this.numerator+this.integer*this.denominator;
+        this.integer       =   0;
+    }
+
     //打印当前类型下的数据
     public void print(){
         //操作数类型
@@ -54,6 +62,6 @@ public class OperNum {
             System.out.print(this.operator);
         if(this.type=="bracket")
             System.out.print(this.pocket);
-        System.out.print(" ");
+
     }
 }
