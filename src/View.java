@@ -2,7 +2,7 @@ import entity.OperNum;
 
 import java.util.*;
 
-public class Main {
+public class View {
 
     public static void view(int r,int n) {
         Scanner in_r    = new Scanner(System.in);
