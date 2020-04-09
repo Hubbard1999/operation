@@ -6,15 +6,17 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
-public class Calculate {
+class Calculate {
     private String[]    str       =   { "+", "-", "×", "÷", "(" ,")"," "};
     private Random      random    =   new Random();
     private int         count     =   random.nextInt(3)+1;       //生成1-3 对应运算符数量
     private OperNum[]   op        =   new OperNum[4*count+3];           //表达式共4*count+3个格子
     private int[][]     count_2   =   {{0,6},{4,10}};                                   //当count=2
     private int[][]     count_3   =   {{0,6},{4,10},{8,14},{0,10},{4,14},{0,6,8,14}};   //当count=3
+            String      Expression=   "";
+            String      Answer    =   "";
 
-    public void Random_Create(int r){
+    void Random_Create(int r){
         //赋值空间
         for(int i = 0;i < 4*count+3;i++) {
             op[i]               =   new OperNum();
@@ -87,71 +89,80 @@ public class Calculate {
             switch (op[i].type) {
                 case "blank"    :
                     System.out.print(op[i].pocket);
+                    Expression  += op[i].pocket;
                     break;
                 case "bracket" :
                     System.out.print(op[i].pocket);
+                    Expression  += " "+op[i].pocket+" ";
                     break;
                 case "oper"    :
                     System.out.print(op[i].operator);
+                    Expression  += op[i].operator;
                     break;
                 case "num"     :
                     op[i].print();
+                    if(op[i].integer > 0)
+                        Expression  += op[i].integer+"'"+op[i].numerator+"/"+op[i].denominator;
+                    else if(op[i].denominator==1)
+                        Expression  += op[i].numerator;
+                    else
+                        Expression  += op[i].numerator+"/"+op[i].denominator;
                     break;
             }
         }
 
     }
 
-    public boolean Compute(){
+    boolean Compute(){
 
         // 存储操作数的栈
-        Stack<OperNum> OpStack          =  new Stack<OperNum>();
+        Stack<OperNum> OpStack          = new Stack<>();
         // 存储转换后的逆波兰式的队列
-        Queue<OperNum> reversePolish    =  new LinkedList<OperNum>();
+        Queue<OperNum> reversePolish    = new LinkedList<>();
         //计算
         for(int i = 0;i < 4*count+3;i++){
             //是操作符 判断操作符栈是否为空
             //为空或者栈顶元素为左括号或者当前操作符优先级大于栈顶操作符直接压栈
-            if(op[i].type.equals("oper")){
-                if(OpStack.isEmpty()||"(".equals(OpStack.peek().pocket)||level(op[i])>level(OpStack.peek())){
-                    OpStack.push(op[i]);
-                }
-                else{
-                    //否则将栈中元素出栈入队，直到遇到大于当前操作符或者遇到左括号时
-                    while(!OpStack.isEmpty() && !"(".equals(OpStack.peek().pocket)){
-                        if(level(op[i]) <= level(OpStack.peek())){
-                            reversePolish.offer(OpStack.pop());
-                        }else break;
+            switch (op[i].type) {
+                case "oper":
+                    if (OpStack.isEmpty() || "(".equals(OpStack.peek().pocket) || level(op[i]) > level(OpStack.peek())) {
+                        OpStack.push(op[i]);
+                    } else {
+                        //否则将栈中元素出栈入队，直到遇到大于当前操作符或者遇到左括号时
+                        while (!OpStack.isEmpty() && !"(".equals(OpStack.peek().pocket)) {
+                            if (level(op[i]) <= level(OpStack.peek())) {
+                                reversePolish.offer(OpStack.pop());
+                            } else break;
 
+                        }
+                        //当前运算符压栈
+                        OpStack.push(op[i]);
                     }
-                    //当前运算符压栈
-                    OpStack.push(op[i]);
-                }
-            }
-            //当前op为操作数  直接入队
-            else if(op[i].type.equals("num")){
-                reversePolish.offer(op[i]);
+                    break;
+                //当前op为操作数  直接入队
+                case "num":
+                    reversePolish.offer(op[i]);
 //                System.out.println();
 //                System.out.print("当前数字num进列:");
 //                op[i].print();
-            }
-            else if(op[i].type.equals("bracket")){
-                //是右括号 ，将栈中元素弹出入队，直到遇到左括号，左括号出栈，但不入队
-                if(")".equals(op[i].pocket)){
-                    while(!OpStack.isEmpty()){
-                        if("(".equals(OpStack.peek().pocket)){
-                            OpStack.pop();
-                            break;
-                        }
-                        else{
-                            reversePolish.offer(OpStack.pop());
+                    break;
+                case "bracket":
+                    //是右括号 ，将栈中元素弹出入队，直到遇到左括号，左括号出栈，但不入队
+                    if (")".equals(op[i].pocket)) {
+                        while (!OpStack.isEmpty()) {
+                            if ("(".equals(OpStack.peek().pocket)) {
+                                OpStack.pop();
+                                break;
+                            } else {
+                                reversePolish.offer(OpStack.pop());
+                            }
                         }
                     }
-                }
-                //是左括号，压栈
-                else if("(".equals(op[i].pocket)){
-                    OpStack.push(op[i]);
-                }
+                    //是左括号，压栈
+                    else if ("(".equals(op[i].pocket)) {
+                        OpStack.push(op[i]);
+                    }
+                    break;
             }
         }
 
@@ -167,66 +178,76 @@ public class Calculate {
         System.out.println();
 
         //根据逆波兰式计算
-        Stack<OperNum> temp          =  new Stack<OperNum>();
+        Stack<OperNum> temp          = new Stack<>();
         OperNum a = new OperNum();
-        OperNum b = new OperNum();
-        while(!reversePolish.isEmpty()){
-            //如果取到的元素是操作数，直接入栈
-            if(reversePolish.peek().type.equals("num")){
+        OperNum b;
+        //如果取到的元素是操作数，直接入栈
+        while(!reversePolish.isEmpty()) if (reversePolish.peek().type.equals("num")) {
 //                System.out.print("出队进栈：");
 //                reversePolish.peek().print();
 //                System.out.println();
-                temp.push(reversePolish.poll());
-            }
-            //如果是运算符，从栈中弹出2个数进行运算，然后把运算结果入栈
-            else{
+            temp.push(reversePolish.poll());
+        }
+        //如果是运算符，从栈中弹出2个数进行运算，然后把运算结果入栈
+        else {
 //                System.out.println();
 //                System.out.println("当前运算符："+reversePolish.peek().operator);
-                b = temp.pop();
+            b = temp.pop();
 //                System.out.print("b:");
 //                b.print();
 //                System.out.println();
-                a = temp.pop();
+            a = temp.pop();
 //                System.out.print("a:");
 //                a.print();System.out.println();
-                switch (reversePolish.peek().operator){
-                    case "+" :
-                        //System.out.println("+++++");
-                        a = add(a,b);
-                        break;
-                    case "-" :
-                        //System.out.println("----");
-                        a = sub(a,b);
-                        break;
-                    case "×" :
-                        //System.out.println("****");
-                        a = multi(a,b);
-                        break;
-                    case "÷" :
-                        //System.out.println("////");
-                        if(b.numerator==0||b.denominator==0) {
-                            System.out.println("遇到除数0");b.print();
-                            return false;
-                        }
-                        a = div(a,b);
-                        break;
+            switch (reversePolish.peek().operator) {
+                case "+":
+                    //System.out.println("+++++");
+                    a = add(a, b);
+                    break;
+                case "-":
+                    //System.out.println("----");
+                    a = sub(a, b);
+                    if(a.numerator<0){
+                        System.out.println("遇到e1<e2");
+                        a.print();
+                        return false;
+                    }
+                    break;
+                case "×":
+                    //System.out.println("****");
+                    a = multi(a, b);
+                    break;
+                case "÷":
+                    //System.out.println("////");
+                    if (b.numerator == 0 || b.denominator == 0) {
+                        System.out.println("遇到除数0");
+                        b.print();
+                        return false;
+                    }
+                    a = div(a, b);
+                    break;
             }
-                reversePolish.poll();
-                temp.push(a);
-                //System.out.println("计算完后进栈：");a.print();
-            }
+            reversePolish.poll();
+            temp.push(a);
+            //System.out.println("计算完后进栈：");a.print();
         }
 
 //        System.out.println();
 //        System.out.println("type:"+temp.peek().type);
         System.out.println("逆波兰式结果:");
         a.print();
+        if(a.integer > 0)
+            Answer  += a.integer+"'"+a.numerator+"/"+a.denominator;
+        else if(a.denominator==1)
+            Answer  += a.numerator;
+        else
+            Answer  += a.numerator+"/"+a.denominator;
         temp.pop();
         return true;
     }
 
 
-    public static int level(OperNum a){
+    private static int level(OperNum a){
         if("×".equals(a.operator)||"÷".equals(a.operator))
             return 1;
         if("+".equals(a.operator)||"-".equals(a.operator))
@@ -234,7 +255,7 @@ public class Calculate {
         return -1;
     }
 
-    public static OperNum add(OperNum a,OperNum b){
+    private static OperNum add(OperNum a, OperNum b){
         a.integer       =   a.integer+b.integer;
         a.numerator     =   a.numerator*b.denominator+b.numerator*a.denominator;
         a.denominator   =   a.denominator*b.denominator;
@@ -244,7 +265,7 @@ public class Calculate {
         return a;
     }
 
-    public static OperNum sub(OperNum a,OperNum b){
+    private static OperNum sub(OperNum a, OperNum b){
         a.yojan();
         b.yojan();
         a.integer       =   a.integer-b.integer;
@@ -256,7 +277,7 @@ public class Calculate {
 
 
 
-    public static OperNum multi(OperNum a,OperNum b){
+    private static OperNum multi(OperNum a, OperNum b){
         a.yojan();
         b.yojan();
 
@@ -267,7 +288,7 @@ public class Calculate {
         return a;
     }
 
-    public static OperNum div(OperNum a,OperNum b){
+    private static OperNum div(OperNum a, OperNum b){
         a.yojan();
         b.yojan();
 
@@ -277,5 +298,6 @@ public class Calculate {
         a.simplify();
         return a;
     }
+
 
 }
