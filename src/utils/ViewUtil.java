@@ -4,13 +4,13 @@ package utils;
 import controller.CheckController;
 import controller.WriteController;
 import dao.FileDao;
+import dao.impl.FileDaoImpl;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-import static dao.FileDao.getFile;
-import static dao.FileDao.getFilePath;
+
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 
 /**
@@ -85,15 +85,16 @@ public class ViewUtil {
             }
         });
        table.addActionListener(e -> {
+           FileDaoImpl fileDao = new FileDaoImpl();
             JFrame jf = new JFrame("参考答案");
             jf.setDefaultCloseOperation(HIDE_ON_CLOSE);
             // 表头（列名）
             String[] columnNames = {"序号","题目", "答案"};
             // 表格所有行数据
-            String[] question= getFile("Exercises.txt","Q");
-            String[] answer= getFile("Answers.txt","Q");
-            int len=FileDao.getLen(question);
-            Object[][] rowData = FileDao.getQuenAns(len,question,answer);
+            String[] question= fileDao.getFile("Exercises.txt","Q");
+            String[] answer= fileDao.getFile("Answers.txt","Q");
+            int len=fileDao.getLen(question);
+            Object[][] rowData = fileDao.getQuenAns(len,question,answer);
             // 创建一个表格，指定 表头 和 所有行数据
             JTable table = tableSet(rowData,columnNames);
             // 把 表格 放到 滚动面板 中（表头将自动添加到滚动面板顶部）
@@ -118,7 +119,8 @@ public class ViewUtil {
             System.out.println(queFile);
         });
         aaa.addActionListener(e -> {
-            ansFile = getFilePath();
+            FileDaoImpl fileDao = new FileDaoImpl();
+            ansFile = fileDao.getFilePath();
             System.out.println("已获取答案路径：");
             System.out.println(ansFile);
             System.out.println("-------------------------------分割线----------------------------------");
@@ -131,11 +133,11 @@ public class ViewUtil {
             // 表头（列名）
             String[] columnNames = {"序号","题目", "答案","参考答案","结果"};
             // 表格所有行数据
-            String[] question= getFile(queFile,"Q");
-            String[] answer= getFile(ansFile,"Q");
-            String[] correctAnswer= getFile("TempAnswers.txt","Q");
-            int len=FileDao.getLen(question);
-            Object[][] rowData = FileDao.getGrade(len,question,answer,correctAnswer);
+            String[] question= fileDao.getFile(queFile,"Q");
+            String[] answer= fileDao.getFile(ansFile,"Q");
+            String[] correctAnswer= fileDao.getFile("TempAnswers.txt","Q");
+            int len=fileDao.getLen(question);
+            Object[][] rowData = fileDao.getGrade(len,question,answer,correctAnswer);
             // 创建一个表格，指定 表头 和 所有行数据
             JTable table = tableSet(rowData,columnNames);
             // 把 表格 放到 滚动面板 中（表头将自动添加到滚动面板顶部）

@@ -8,7 +8,13 @@ import service.WriteService;
  * @date 2020/4/10 20:49
  */
 public class WriteController {
-
+    /**
+     * @Author Hubbard
+     * @Description //TODO 对给定范围r和道数n 进行生成题目和对应答案操作
+     * @Date 2020/4/11
+     * @Param [r, n]
+     * @return void
+     **/
     public void write(int r, int n) {
         String[] formula = new String[n];
         String[] answer  = new String[n];

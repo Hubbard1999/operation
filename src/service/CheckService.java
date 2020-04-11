@@ -1,6 +1,7 @@
 package service;
 
 import dao.FileDao;
+import dao.impl.FileDaoImpl;
 import entity.OperNum;
 import utils.GetAnswerUtil;
 
@@ -60,7 +61,7 @@ public class CheckService {
     }
 
     public void writeAnsFile(String[] answer){
-        FileDao fileWrite = new FileDao();
+        FileDaoImpl fileWrite = new FileDaoImpl();
         fileWrite.writeAnsFile(answer);
     }
 

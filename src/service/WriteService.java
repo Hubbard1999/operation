@@ -2,6 +2,8 @@ package service;
 
 import dao.FileDao;
 import dao.InitDao;
+import dao.impl.FileDaoImpl;
+import dao.impl.InitDaoImpl;
 import entity.OperNum;
 import utils.PolishUtil;
 
@@ -26,7 +28,7 @@ public class WriteService {
     public String       answer   =   "";
 
     public void randomCreate(int r){
-        InitDao initDao = new InitDao();
+        InitDaoImpl initDao = new InitDaoImpl();
         //赋值空间
         op = initDao.mallocSpace(op,space);
 
@@ -101,7 +103,7 @@ public class WriteService {
     }
 
     public void fileWire(String[] formula, String[] answer){
-        FileDao fileWrite = new FileDao();
+        FileDaoImpl fileWrite = new FileDaoImpl();
         fileWrite.fileWire(formula,answer);
     }
 
